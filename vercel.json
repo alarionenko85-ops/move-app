@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "public/index.html", "use": "@vercel/static" },
+    { "src": "api/workout.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/workout", "dest": "/api/workout.js" },
+    { "src": "/(.*)", "dest": "/public/index.html" }
+  ]
+}
