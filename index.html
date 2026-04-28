@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOVE — домашнє тренування</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Jost',sans-serif;background:#0F0E0C;color:#F0EBE0;min-height:100vh;}
+.app{max-width:480px;margin:0 auto;padding:0 20px 80px;}
+.noise{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:0.4;}
+.content{position:relative;z-index:1;}
+.hdr{padding:40px 0 28px;border-bottom:1px solid rgba(240,235,224,.1);margin-bottom:28px;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;letter-spacing:-1px;line-height:1;}
+.logo span{color:#C8A96E;}
+.tagline{font-size:12px;color:rgba(240,235,224,.4);letter-spacing:2px;text-transform:uppercase;margin-top:6px;}
+.greeting{font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(240,235,224,.7);margin-top:8px;font-style:italic;}
+.sec{margin-bottom:22px;}
+.sec-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#C8A96E;margin-bottom:6px;font-weight:500;}
+.sec-sub{font-size:12px;color:rgba(240,235,224,.35);margin-bottom:12px;}
+.name-input{width:100%;background:rgba(240,235,224,.04);border:1px solid rgba(240,235,224,.12);border-radius:14px;padding:16px 18px;font-family:'Jost',sans-serif;font-size:16px;color:#F0EBE0;outline:none;transition:border-color .2s;}
+.name-input::placeholder{color:rgba(240,235,224,.25);}
+.name-input:focus{border-color:#C8A96E;}
+.mood-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.card{background:rgba(240,235,224,.04);border:1px solid rgba(240,235,224,.08);border-radius:14px;padding:16px 14px;cursor:pointer;transition:all .2s;}
+.card:hover{background:rgba(240,235,224,.07);border-color:rgba(200,169,110,.3);}
+.card.sel{background:rgba(200,169,110,.12);border-color:#C8A96E;}
+.card-icon{font-size:24px;margin-bottom:8px;}
+.card-label{font-size:14px;font-weight:500;margin-bottom:3px;}
+.card-desc{font-size:11px;color:rgba(240,235,224,.45);line-height:1.4;}
+.dur-row{display:flex;gap:8px;}
+.dpill{flex:1;background:rgba(240,235,224,.04);border:1px solid rgba(240,235,224,.08);border-radius:100px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.dpill:hover{border-color:rgba(200,169,110,.3);}
+.dpill.sel{background:rgba(200,169,110,.12);border-color:#C8A96E;}
+.dm{font-size:14px;font-weight:500;}
+.ds{font-size:10px;color:rgba(240,235,224,.4);margin-top:2px;}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.fcard{background:rgba(240,235,224,.04);border:1px solid rgba(240,235,224,.08);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.fcard:hover{border-color:rgba(200,169,110,.3);}
+.fcard.sel{background:rgba(200,169,110,.12);border-color:#C8A96E;}
+.lrow{display:flex;gap:8px;}
+.lcard{flex:1;background:rgba(240,235,224,.04);border:1px solid rgba(240,235,224,.08);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.lcard:hover{border-color:rgba(200,169,110,.3);}
+.lcard.sel{background:rgba(200,169,110,.12);border-color:#C8A96E;}
+.zone-block{background:rgba(240,235,224,.02);border:1px solid rgba(240,235,224,.06);border-radius:16px;padding:16px;margin-bottom:12px;}
+.zone-block-hdr{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.zone-block-title{font-size:13px;font-weight:500;}
+.zone-block-desc{font-size:11px;color:rgba(240,235,224,.35);margin-bottom:14px;line-height:1.4;}
+.zgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.zcard{background:rgba(240,235,224,.04);border:1px solid rgba(240,235,224,.08);border-radius:11px;padding:11px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.zcard:hover{border-color:rgba(240,235,224,.2);}
+.zcard.sel-care{background:rgba(232,133,90,.1);border-color:#E8855A;}
+.zcard.sel-target{background:rgba(200,169,110,.12);border-color:#C8A96E;}
+.btn{width:100%;padding:18px;background:#C8A96E;color:#0F0E0C;border:none;border-radius:14px;font-family:'Jost',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;margin-top:8px;display:block;}
+.btn:hover{background:#D4B97E;transform:translateY(-1px);}
+.btn:disabled{background:rgba(240,235,224,.1);color:rgba(240,235,224,.3);cursor:not-allowed;transform:none;}
+.btn-g{width:100%;padding:15px;background:transparent;color:rgba(240,235,224,.5);border:1px solid rgba(240,235,224,.1);border-radius:14px;font-family:'Jost',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;margin-top:10px;display:block;}
+.btn-g:hover{border-color:rgba(240,235,224,.3);color:rgba(240,235,224,.8);}
+.resume-banner{background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.25);border-radius:14px;padding:16px;margin-bottom:20px;}
+.resume-title{font-size:13px;font-weight:500;color:#C8A96E;margin-bottom:4px;}
+.resume-sub{font-size:12px;color:rgba(240,235,224,.5);margin-bottom:12px;line-height:1.4;}
+.resume-btns{display:flex;gap:8px;}
+.resume-yes{flex:2;padding:12px;background:#C8A96E;color:#0F0E0C;border:none;border-radius:10px;font-family:'Jost',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.resume-no{flex:1;padding:12px;background:transparent;color:rgba(240,235,224,.4);border:1px solid rgba(240,235,224,.1);border-radius:10px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;}
+.spinner{width:56px;height:56px;border:2px solid rgba(200,169,110,.2);border-top-color:#C8A96E;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.lt{font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:8px;}
+.ls{font-size:13px;color:rgba(240,235,224,.4);}
+.w-hdr{padding:28px 0 18px;margin-bottom:16px;border-bottom:1px solid rgba(240,235,224,.08);}
+.w-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;line-height:1.2;margin-bottom:10px;}
+.badges{display:flex;flex-wrap:wrap;gap:6px;}
+.badge{font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:100px;border:1px solid rgba(200,169,110,.4);color:#C8A96E;}
+.intro{background:rgba(200,169,110,.07);border-left:2px solid #C8A96E;border-radius:0 12px 12px 0;padding:14px 16px;margin-bottom:18px;font-size:13px;color:rgba(240,235,224,.7);line-height:1.6;font-style:italic;}
+.phase-lbl{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#C8A96E;margin:18px 0 8px;font-weight:500;}
+.ex{background:rgba(240,235,224,.03);border:1px solid rgba(240,235,224,.07);border-radius:14px;padding:16px;margin-bottom:8px;}
+.ex.done{border-color:rgba(200,169,110,.25);background:rgba(200,169,110,.04);}
+.ex-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px;}
+.chk{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(240,235,224,.2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px;font-size:11px;color:transparent;}
+.chk.on{background:#C8A96E;border-color:#C8A96E;color:#0F0E0C;}
+.ex-name{font-size:15px;font-weight:500;flex:1;}
+.ex-name.strike{text-decoration:line-through;color:rgba(240,235,224,.3);}
+.ex-tb{font-size:11px;color:#C8A96E;background:rgba(200,169,110,.1);padding:3px 10px;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+.ex-desc{font-size:13px;color:rgba(240,235,224,.5);line-height:1.5;margin-bottom:8px;padding-left:32px;}
+.ex-tip{font-size:12px;color:rgba(200,169,110,.8);font-style:italic;margin-bottom:10px;padding-left:32px;}
+.ex-acts{display:flex;align-items:center;gap:8px;padding-left:32px;flex-wrap:wrap;}
+.focus-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#C8A96E;background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.25);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:'Jost',sans-serif;}
+.timer-wrap{display:inline-flex;align-items:center;gap:6px;background:rgba(240,235,224,.06);border:1px solid rgba(240,235,224,.1);border-radius:10px;padding:6px 12px;}
+.timer-disp{font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;min-width:52px;text-align:center;color:rgba(240,235,224,.6);}
+.timer-disp.run{color:#C8A96E;}
+.timer-disp.fin{color:rgba(200,169,110,.6);}
+.t-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;color:rgba(240,235,224,.7);}
+.yt-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#FF6B6B;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:8px;padding:6px 12px;text-decoration:none;font-family:'Jost',sans-serif;}
+.prog-wrap{height:2px;background:rgba(240,235,224,.08);border-radius:2px;margin-bottom:18px;}
+.prog-fill{height:2px;background:#C8A96E;border-radius:2px;transition:width .4s;}
+.tips-card{background:rgba(240,235,224,.03);border:1px solid rgba(240,235,224,.07);border-radius:14px;padding:16px;margin:16px 0;}
+.tips-t{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C8A96E;margin-bottom:10px;}
+.tip-row{font-size:13px;color:rgba(240,235,224,.6);line-height:1.6;padding:5px 0;border-bottom:1px solid rgba(240,235,224,.05);}
+.tip-row:last-child{border-bottom:none;}
+.fin-msg{text-align:center;padding:20px 0;font-size:15px;color:#C8A96E;font-family:'Cormorant Garamond',serif;font-style:italic;}
+.err{background:rgba(255,100,100,.1);border:1px solid rgba(255,100,100,.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#FF8080;}
+.pause-banner{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#1A1815;border-top:1px solid rgba(200,169,110,.3);padding:16px 20px;z-index:100;display:flex;gap:10px;}
+.pb-btn{flex:1;padding:14px;border-radius:12px;border:none;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;cursor:pointer;}
+.pb-resume{background:#C8A96E;color:#0F0E0C;}
+.pb-stop{background:rgba(240,235,224,.06);color:rgba(240,235,224,.6);border:1px solid rgba(240,235,224,.15)!important;}
+.focus-mode{position:fixed;inset:0;background:#0A0908;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.fm-phase{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#C8A96E;margin-bottom:16px;}
+.fm-name{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;line-height:1.2;margin-bottom:8px;}
+.fm-desc{font-size:14px;color:rgba(240,235,224,.5);line-height:1.6;margin-bottom:28px;max-width:320px;}
+.big-timer{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:28px;}
+.big-t-btn{padding:12px 32px;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);border-radius:100px;color:#C8A96E;font-family:'Jost',sans-serif;font-size:14px;cursor:pointer;}
+.fm-nav{display:flex;gap:10px;width:100%;max-width:320px;}
+.fm-nav-btn{flex:1;padding:14px;border-radius:12px;font-family:'Jost',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;}
+.fm-next{background:#C8A96E;color:#0F0E0C;}
+.fm-exit{background:rgba(240,235,224,.06);color:rgba(240,235,224,.5);border:1px solid rgba(240,235,224,.1)!important;}
+.fm-counter{font-size:12px;color:rgba(240,235,224,.3);margin-top:16px;}
+.fm-tip{font-size:12px;color:rgba(200,169,110,.7);font-style:italic;max-width:300px;line-height:1.5;}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="app"><div class="content">
+<div class="hdr">
+  <div class="logo">MOVE<span>.</span></div>
+  <div class="tagline">твоє домашнє тренування</div>
+  <div class="greeting hidden" id="greeting"></div>
+</div>
+<div id="screen-setup">
+  <div class="err hidden" id="error-box"></div>
+  <div class="resume-banner hidden" id="resume-banner">
+    <div class="resume-title">🏃 У тебе є незавершене тренування</div>
+    <div class="resume-sub" id="resume-sub"></div>
+    <div class="resume-btns">
+      <button class="resume-yes" onclick="resumeSaved()">Продовжити</button>
+      <button class="resume-no" onclick="dismissResume()">Нове</button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Як тебе звати?</div>
+    <input class="name-input" id="name-input" placeholder="Введи своє ім'я (необов'язково)" maxlength="30">
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Як ти себе почуваєш?</div>
+    <div class="mood-grid" id="mood-grid"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Скільки у тебе часу?</div>
+    <div class="dur-row" id="dur-row"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">На чому фокусуємось?</div>
+    <div class="fgrid" id="focus-grid"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Твій рівень підготовки</div>
+    <div class="lrow" id="level-row"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Зони тіла</div>
+    <div class="sec-sub">Необов'язково — можна пропустити</div>
+    <div class="zone-block">
+      <div class="zone-block-hdr"><span>⚠️</span><span class="zone-block-title">Бережу — болить або є обмеження</span></div>
+      <div class="zone-block-desc">Claude уникне навантаження на ці зони</div>
+      <div class="zgrid" id="careful-grid"></div>
+    </div>
+    <div class="zone-block">
+      <div class="zone-block-hdr"><span>🎯</span><span class="zone-block-title">Хочу опрацювати — зробити акцент</span></div>
+      <div class="zone-block-desc">Claude додасть більше вправ для цих зон</div>
+      <div class="zgrid" id="target-grid"></div>
+    </div>
+  </div>
+  <button class="btn" id="generate-btn" disabled onclick="generate()">Обери всі параметри</button>
+</div>
+<div id="screen-loading" class="loading hidden">
+  <div class="spinner"></div>
+  <div class="lt">Складаю для тебе тренування</div>
+  <div class="ls">це займе кілька секунд…</div>
+</div>
+<div id="screen-workout" class="hidden">
+  <div class="w-hdr">
+    <div class="w-title" id="w-title"></div>
+    <div class="badges" id="w-badges"></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="intro hidden" id="w-intro"></div>
+  <button class="btn" id="start-btn" onclick="startWorkout()" style="margin-bottom:16px">▶ Почати тренування</button>
+  <button class="btn hidden" id="focus-mode-btn" onclick="enterFocusMode(0)" style="margin-bottom:8px">🎯 Режим тренування</button>
+  <button class="btn-g hidden" id="pause-btn" onclick="pauseWorkout()" style="margin-bottom:16px;margin-top:0">⏸ Поставити на паузу</button>
+  <div id="exercises-container"></div>
+  <div class="tips-card hidden" id="tips-card">
+    <div class="tips-t">✦ Поради</div>
+    <div id="tips-list"></div>
+  </div>
+  <div class="fin-msg hidden" id="fin-msg"></div>
+  <button class="btn" onclick="resetApp()" style="margin-top:8px">Нове тренування</button>
+  <button class="btn-g" onclick="backToSetup()">← Змінити параметри</button>
+</div>
+</div></div>
+<div class="pause-banner hidden" id="pause-banner">
+  <button class="pb-btn pb-resume" onclick="resumeWorkout()">▶ Продовжити</button>
+  <button class="pb-btn pb-stop" onclick="resetApp()">✕ Завершити</button>
+</div>
+<div class="focus-mode hidden" id="focus-mode">
+  <div class="fm-phase" id="fm-phase"></div>
+  <div class="fm-name" id="fm-name"></div>
+  <div class="fm-desc" id="fm-desc"></div>
+  <div class="big-timer" id="big-timer-wrap">
+    <svg width="140" height="140" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="54" fill="none" stroke="rgba(200,169,110,0.15)" stroke-width="6"/>
+      <circle cx="70" cy="70" r="54" fill="none" stroke="#C8A96E" stroke-width="6" stroke-dasharray="339.3" stroke-dashoffset="339.3" stroke-linecap="round" transform="rotate(-90 70 70)" id="fm-circle" style="transition:stroke-dashoffset 1s linear"/>
+      <text x="70" y="68" text-anchor="middle" fill="#F0EBE0" font-size="26" font-family="'Jost',sans-serif" font-weight="500" id="fm-time-text">0:00</text>
+      <text x="70" y="86" text-anchor="middle" fill="rgba(200,169,110,0.7)" font-size="11" font-family="'Jost',sans-serif" letter-spacing="1" id="fm-time-label">ЗАЛИШИЛОСЬ</text>
+    </svg>
+    <button class="big-t-btn" id="fm-toggle-btn" onclick="toggleFmTimer()">⏸ Пауза</button>
+  </div>
+  <div class="fm-tip hidden" id="fm-tip"></div>
+  <div style="height:20px"></div>
+  <div class="fm-nav">
+    <button class="fm-nav-btn fm-exit" onclick="exitFocusMode()">← Список</button>
+    <button class="fm-nav-btn fm-next" id="fm-next-btn" onclick="nextFocusEx()">Наступне →</button>
+  </div>
+  <div class="fm-counter" id="fm-counter"></div>
+</div>
+<script>
+const MOODS=[{id:"energetic",icon:"⚡",label:"Заряджена",desc:"Готова викластись на повну"},{id:"calm",icon:"🌿",label:"Спокійна",desc:"Хочу м'яко й усвідомлено"},{id:"tired",icon:"😴",label:"Втомилась",desc:"Немає сил, але рухатись треба"},{id:"stressed",icon:"🌀",label:"У стресі",desc:"Потрібно скинути напругу"},{id:"morning",icon:"🌅",label:"Вранці",desc:"Прокинутись і розігрітись"},{id:"stiff",icon:"🪨",label:"Закута",desc:"Все болить, потрібна розтяжка"}];
+const DURATIONS=[{id:"10",label:"10 хв",sub:"мікро"},{id:"20",label:"20 хв",sub:"коротке"},{id:"30",label:"30 хв",sub:"середнє"},{id:"40",label:"40 хв",sub:"повне"}];
+const FOCUSES=[{id:"cardio",icon:"🏃",label:"Кардіо"},{id:"strength",icon:"💪",label:"Сила"},{id:"yoga",icon:"🧘",label:"Йога"},{id:"stretch",icon:"🤸",label:"Розтяжка"},{id:"pilates",icon:"🎯",label:"Пілатес"},{id:"mix",icon:"✨",label:"Мікс"}];
+const LEVELS=[{id:"beginner",icon:"🌱",label:"Початківець",desc:"Не займаюсь спортом"},{id:"medium",icon:"🔥",label:"Середній",desc:"Іноді займаюсь"},{id:"advanced",icon:"💎",label:"Просунутий",desc:"Займаюсь регулярно"}];
+const ZONES=[{id:"back",icon:"🔙",label:"Спина"},{id:"neck",icon:"🦒",label:"Шия"},{id:"knees",icon:"🦵",label:"Коліна"},{id:"shoulders",icon:"🤷",label:"Плечі"},{id:"hips",icon:"🍑",label:"Стегна"},{id:"belly",icon:"🫃",label:"Живіт"}];
+const SK="move_workout_save";
+let S={mood:null,dur:null,focus:null,level:null,careful:[],target:[],workout:null,allEx:[],done:{},started:false,paused:false,focusIdx:0,timers:{},fmTimer:null,fmRunning:false,fmTotal:0,fmLeft:0};
+function save(){if(!S.workout)return;try{localStorage.setItem(SK,JSON.stringify({workout:S.workout,done:S.done,started:S.started,allEx:S.allEx,name:document.getElementById("name-input")?.value?.trim()||"",savedAt:new Date().toISOString()}));}catch(e){}}
+function loadSave(){try{const r=localStorage.getItem(SK);if(!r)return null;const s=JSON.parse(r);if(!s.workout||!s.allEx)return null;if(Date.now()-new Date(s.savedAt).getTime()>86400000){localStorage.removeItem(SK);return null;}return s;}catch(e){return null;}}
+function clearSave(){try{localStorage.removeItem(SK);}catch(e){}}
+function checkResume(){const sv=loadSave();if(!sv)return;const d=Object.values(sv.done).filter(Boolean).length,t=sv.allEx.length;if(d>=t){clearSave();return;}document.getElementById("resume-sub").textContent=(sv.name?sv.name+", у":"У")+"тебе залишилось "+(t-d)+" з "+t+" вправ із тренування \""+sv.workout.title+"\"";document.getElementById("resume-banner").classList.remove("hidden");}
+function resumeSaved(){const sv=loadSave();if(!sv)return;S.workout=sv.workout;S.done=sv.done;S.started=sv.started;S.allEx=sv.allEx;document.getElementById("resume-banner").classList.add("hidden");if(sv.name)document.getElementById("name-input").value=sv.name;renderWorkout(sv.name);showScreen("workout");if(sv.started){document.getElementById("start-btn").classList.add("hidden");document.getElementById("focus-mode-btn").classList.remove("hidden");document.getElementById("pause-btn").classList.remove("hidden");S.allEx.forEach((ex,i)=>addControls(ex,i));}Object.entries(S.done).forEach(([k,v])=>{if(v)applyDone(k,true);});updateProg();}
+function dismissResume(){clearSave();document.getElementById("resume-banner").classList.add("hidden");}
+function parseSecs(s){if(!s)return 0;const m=s.match(/(\d+)\s*(хв|мин)/),sc=s.match(/(\d+)\s*сек/);return(m?+m[1]*60:0)+(sc?+sc[1]:0);}
+function fmtT(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");}
+function renderSetup(){
+  document.getElementById("mood-grid").innerHTML=MOODS.map(m=>`<div class="card${S.mood===m.id?" sel":""}" onclick="pick('mood','${m.id}')"><div class="card-icon">${m.icon}</div><div class="card-label">${m.label}</div><div class="card-desc">${m.desc}</div></div>`).join("");
+  document.getElementById("dur-row").innerHTML=DURATIONS.map(d=>`<div class="dpill${S.dur===d.id?" sel":""}" onclick="pick('dur','${d.id}')"><div class="dm">${d.label}</div><div class="ds">${d.sub}</div></div>`).join("");
+  document.getElementById("focus-grid").innerHTML=FOCUSES.map(f=>`<div class="fcard${S.focus===f.id?" sel":""}" onclick="pick('focus','${f.id}')"><div style="font-size:22px;margin-bottom:6px">${f.icon}</div><div style="font-size:12px;font-weight:500">${f.label}</div></div>`).join("");
+  document.getElementById("level-row").innerHTML=LEVELS.map(l=>`<div class="lcard${S.level===l.id?" sel":""}" onclick="pick('level','${l.id}')"><div style="font-size:20px;margin-bottom:6px">${l.icon}</div><div style="font-size:13px;font-weight:500;margin-bottom:2px">${l.label}</div><div style="font-size:10px;color:rgba(240,235,224,.4)">${l.desc}</div></div>`).join("");
+  renderZones();updBtn();
+}
+function renderZones(){
+  document.getElementById("careful-grid").innerHTML=ZONES.map(z=>`<div class="zcard${S.careful.includes(z.id)?" sel-care":""}" onclick="toggleZone('careful','${z.id}')"><div style="font-size:18px;margin-bottom:4px">${z.icon}</div><div style="font-size:11px;font-weight:500">${z.label}</div></div>`).join("");
+  document.getElementById("target-grid").innerHTML=ZONES.map(z=>`<div class="zcard${S.target.includes(z.id)?" sel-target":""}" onclick="toggleZone('target','${z.id}')"><div style="font-size:18px;margin-bottom:4px">${z.icon}</div><div style="font-size:11px;font-weight:500">${z.label}</div></div>`).join("");
+}
+function pick(f,v){S[f]=v;renderSetup();}
+function toggleZone(l,id){if(S[l].includes(id)){S[l]=S[l].filter(x=>x!==id);}else{S[l]=[...S[l],id];const o=l==="careful"?"target":"careful";S[o]=S[o].filter(x=>x!==id);}renderZones();}
+function updBtn(){const btn=document.getElementById("generate-btn"),ok=S.mood&&S.dur&&S.focus&&S.level;btn.disabled=!ok;btn.textContent=ok?"Створити тренування →":"Обери всі параметри";}
+async function generate(){
+  const mO=MOODS.find(x=>x.id===S.mood),dO=DURATIONS.find(x=>x.id===S.dur),fO=FOCUSES.find(x=>x.id===S.focus),lO=LEVELS.find(x=>x.id===S.level);
+  const cL=S.careful.map(z=>ZONES.find(x=>x.id===z)?.label).filter(Boolean).join(", ");
+  const tL=S.target.map(z=>ZONES.find(x=>x.id===z)?.label).filter(Boolean).join(", ");
+  const name=document.getElementById("name-input").value.trim();
+  showScreen("loading");
+  const zP=[cL?"⚠️ БЕРЕГТИ — уникати навантаження на: "+cL+".":"",tL?"🎯 АКЦЕНТ — більше вправ на: "+tL+".":""].filter(Boolean).join("\n");
+  const prompt="Ти персональний тренер. Склади домашнє тренування без обладнання.\nПараметри: настрій — "+mO.label+", час — "+dO.label+", фокус — "+fO.label+", рівень — "+lO.label+".\n"+zP+(name?"\nЗверніться до "+name+" на ім'я у полі intro.":"")+"\n\nПоверни ТІЛЬКИ валідний JSON без markdown українською мовою:\n{\"title\":\"...\",\"mood\":\""+mO.label+"\",\"duration\":\""+dO.label+"\",\"focus\":\""+fO.label+"\",\"level\":\""+lO.label+"\",\"intro\":\"1-2 речення\",\"phases\":[{\"name\":\"РОЗМИНКА\",\"exercises\":[{\"name\":\"...\",\"duration\":\"30 сек\",\"desc\":\"...\",\"tip\":\"...\",\"youtube\":\"https://www.youtube.com/results?search_query=вправа+вдома\"}]}],\"tips\":[\"...\",\"...\",\"...\"]}\n\nКількість вправ: 10 хв=6-8, 20 хв=10-12, 30 хв=14-16, 40 хв=18-20.\nduration: ТІЛЬКИ \"X сек\" або \"X хв\". Без слешів.\nФази: розминка, основна частина, заминка. Всі тексти — українською.";
+  try{
+    const res=await fetch("/api/workout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});
+    const data=await res.json();const text=data.content?.[0]?.text||"";
+    let parsed=null;
+    try{parsed=JSON.parse(text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim());}catch{const m=text.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch{}}
+    if(parsed?.phases){S.workout=parsed;S.done={};S.started=false;S.paused=false;S.allEx=parsed.phases.flatMap((p,pi)=>p.exercises.map((e,ei)=>({...e,pi,ei,key:`${pi}-${ei}`,phaseName:p.name})));renderWorkout(name);showScreen("workout");save();}
+    else{showError("Не вдалось розпізнати тренування. Спробуй ще раз.");showScreen("setup");}
+  }catch(e){showError("Помилка з'єднання. Спробуй ще раз.");showScreen("setup");}
+}
+function renderWorkout(name){
+  const w=S.workout;
+  document.getElementById("w-title").textContent=w.title;
+  document.getElementById("w-badges").innerHTML=[w.duration,w.focus,w.level,w.mood].map(b=>`<span class="badge">${b}</span>`).join("");
+  if(w.intro){const i=document.getElementById("w-intro");i.textContent=w.intro;i.classList.remove("hidden");}
+  if(name){const g=document.getElementById("greeting");g.textContent="Привіт, "+name+"! 👋";g.classList.remove("hidden");}
+  const C=document.getElementById("exercises-container");C.innerHTML="";
+  w.phases.forEach((phase,pi)=>{
+    const ph=document.createElement("div");ph.innerHTML=`<div class="phase-lbl">${phase.name}</div>`;
+    phase.exercises.forEach((ex,ei)=>{
+      const key=`${pi}-${ei}`;const c=document.createElement("div");c.className="ex";c.id=`ex-${key}`;
+      c.innerHTML=`<div class="ex-top"><div class="chk" id="chk-${key}" onclick="toggleDone('${key}')">✓</div><div class="ex-name" id="exname-${key}">${ex.name}</div>${ex.duration?`<span class="ex-tb">${ex.duration}</span>`:""}</div><div class="ex-body" id="exbody-${key}">${ex.desc?`<div class="ex-desc">${ex.desc}</div>`:""}${ex.tip?`<div class="ex-tip">💡 ${ex.tip}</div>`:""}<div class="ex-acts" id="exacts-${key}">${ex.youtube?`<a href="${ex.youtube}" target="_blank" class="yt-btn">▶ YouTube</a>`:""}</div></div>`;
+      ph.appendChild(c);
+    });C.appendChild(ph);
+  });
+  if(w.tips?.length){const tc=document.getElementById("tips-card");document.getElementById("tips-list").innerHTML=w.tips.map(t=>`<div class="tip-row">${t}</div>`).join("");tc.classList.remove("hidden");}
+  updateProg();
+}
+function applyDone(key,isDone){
+  const c=document.getElementById(`ex-${key}`),ch=document.getElementById(`chk-${key}`),n=document.getElementById(`exname-${key}`),b=document.getElementById(`exbody-${key}`);
+  if(!c)return;
+  if(isDone){c.classList.add("done");if(ch)ch.classList.add("on");if(n)n.classList.add("strike");if(b)b.style.display="none";}
+  else{c.classList.remove("done");if(ch)ch.classList.remove("on");if(n)n.classList.remove("strike");if(b)b.style.display="";}
+}
+function toggleDone(key){S.done[key]=!S.done[key];applyDone(key,S.done[key]);updateProg();save();}
+function updateProg(){
+  const tot=S.allEx.length,d=Object.values(S.done).filter(Boolean).length;
+  document.getElementById("prog-fill").style.width=(tot?(d/tot)*100:0)+"%";
+  if(d===tot&&tot>0){const nm=document.getElementById("name-input")?.value?.trim()||"";const f=document.getElementById("fin-msg");f.textContent="🎉 "+(nm?nm+", т":"Т")+"ренування завершено! Чудова робота.";f.classList.remove("hidden");clearSave();}
+}
+function addControls(ex,idx){
+  const a=document.getElementById(`exacts-${ex.key}`);if(!a||a.querySelector(".focus-btn"))return;
+  const fb=document.createElement("button");fb.className="focus-btn";fb.textContent="⤢ Фокус";fb.onclick=()=>enterFocusMode(idx);a.insertBefore(fb,a.firstChild);
+  const sc=parseSecs(ex.duration);if(sc>0){const tw=mkTimer(ex.key,sc);a.insertBefore(tw,a.children[1]);}
+}
+function startWorkout(){S.started=true;document.getElementById("start-btn").classList.add("hidden");document.getElementById("focus-mode-btn").classList.remove("hidden");document.getElementById("pause-btn").classList.remove("hidden");S.allEx.forEach((ex,i)=>addControls(ex,i));save();}
+function mkTimer(key,tot){
+  S.timers[key]={left:tot,running:false,intervalId:null,total:tot};
+  const w=document.createElement("div");w.className="timer-wrap";w.id=`timer-${key}`;
+  w.innerHTML=`<span class="timer-disp" id="tdisp-${key}">${fmtT(tot)}</span><button class="t-btn" id="tbtn-${key}" onclick="toggleTimer('${key}')">▶</button>`;
+  return w;
+}
+function toggleTimer(key){
+  const t=S.timers[key];if(!t)return;
+  if(t.running){clearInterval(t.intervalId);t.running=false;document.getElementById(`tbtn-${key}`).textContent="▶";document.getElementById(`tdisp-${key}`).classList.remove("run");}
+  else{t.running=true;document.getElementById(`tbtn-${key}`).textContent="⏸";document.getElementById(`tdisp-${key}`).classList.add("run");
+    t.intervalId=setInterval(()=>{t.left--;const d=document.getElementById(`tdisp-${key}`);if(d)d.textContent=fmtT(t.left);if(t.left<=0){clearInterval(t.intervalId);t.running=false;if(d){d.textContent="✓";d.className="timer-disp fin";}const b=document.getElementById(`tbtn-${key}`);if(b){b.textContent="↺";b.onclick=()=>resetTimer(key);}}},1000);}
+}
+function resetTimer(key){const t=S.timers[key];if(!t)return;clearInterval(t.intervalId);t.left=t.total;t.running=false;const d=document.getElementById(`tdisp-${key}`);if(d){d.textContent=fmtT(t.total);d.className="timer-disp";}const b=document.getElementById(`tbtn-${key}`);if(b){b.textContent="▶";b.onclick=()=>toggleTimer(key);}}
+function pauseWorkout(){S.paused=true;Object.keys(S.timers).forEach(k=>{if(S.timers[k].running)toggleTimer(k);});document.getElementById("pause-banner").classList.remove("hidden");document.getElementById("pause-btn").classList.add("hidden");}
+function resumeWorkout(){S.paused=false;document.getElementById("pause-banner").classList.add("hidden");document.getElementById("pause-btn").classList.remove("hidden");}
+function enterFocusMode(idx){S.focusIdx=idx;renderFM();document.getElementById("focus-mode").classList.remove("hidden");}
+function exitFocusMode(){clearFmT();document.getElementById("focus-mode").classList.add("hidden");}
+function renderFM(){
+  clearFmT();const ex=S.allEx[S.focusIdx];if(!ex)return;
+  document.getElementById("fm-phase").textContent=ex.phaseName;
+  document.getElementById("fm-name").textContent=ex.name;
+  document.getElementById("fm-desc").textContent=ex.desc||"";
+  document.getElementById("fm-counter").textContent=(S.focusIdx+1)+" / "+S.allEx.length;
+  document.getElementById("fm-next-btn").textContent=S.focusIdx<S.allEx.length-1?"Наступне →":"Завершити ✓";
+  const tip=document.getElementById("fm-tip");if(ex.tip){tip.textContent="💡 "+ex.tip;tip.classList.remove("hidden");}else tip.classList.add("hidden");
+  const sc=parseSecs(ex.duration);S.fmTotal=sc;S.fmLeft=sc;S.fmRunning=sc>0;
+  if(sc>0){document.getElementById("big-timer-wrap").classList.remove("hidden");updFM();if(S.fmRunning)startFmT();}
+  else document.getElementById("big-timer-wrap").classList.add("hidden");
+}
+function startFmT(){S.fmTimer=setInterval(()=>{S.fmLeft--;updFM();if(S.fmLeft<=0){clearFmT();document.getElementById("fm-time-text").textContent="✓";document.getElementById("fm-time-label").textContent="ГОТОВО";document.getElementById("fm-toggle-btn").classList.add("hidden");}},1000);}
+function updFM(){const c=2*Math.PI*54,p=S.fmTotal>0?(S.fmTotal-S.fmLeft)/S.fmTotal:1;document.getElementById("fm-circle").style.strokeDashoffset=c*(1-p);document.getElementById("fm-time-text").textContent=fmtT(S.fmLeft);document.getElementById("fm-time-label").textContent="ЗАЛИШИЛОСЬ";document.getElementById("fm-toggle-btn").classList.remove("hidden");document.getElementById("fm-toggle-btn").textContent=S.fmRunning?"⏸ Пауза":"▶ Продовжити";}
+function toggleFmTimer(){if(S.fmRunning){clearFmT();S.fmRunning=false;}else{S.fmRunning=true;startFmT();}document.getElementById("fm-toggle-btn").textContent=S.fmRunning?"⏸ Пауза":"▶ Продовжити";}
+function clearFmT(){if(S.fmTimer){clearInterval(S.fmTimer);S.fmTimer=null;}}
+function nextFocusEx(){toggleDone(S.allEx[S.focusIdx].key);if(S.focusIdx<S.allEx.length-1){S.focusIdx++;renderFM();}else exitFocusMode();}
+function showScreen(name){["setup","loading","workout"].forEach(s=>document.getElementById(`screen-${s}`).classList.toggle("hidden",s!==name));}
+function showError(msg){const b=document.getElementById("error-box");b.textContent=msg;b.classList.remove("hidden");}
+function backToSetup(){document.getElementById("pause-banner").classList.add("hidden");showScreen("setup");}
+function resetApp(){clearSave();S={mood:null,dur:null,focus:null,level:null,careful:[],target:[],workout:null,allEx:[],done:{},started:false,paused:false,focusIdx:0,timers:{},fmTimer:null,fmRunning:false,fmTotal:0,fmLeft:0};clearFmT();["focus-mode","pause-banner"].forEach(id=>document.getElementById(id).classList.add("hidden"));["greeting","w-intro","fin-msg","tips-card","error-box"].forEach(id=>document.getElementById(id).classList.add("hidden"));document.getElementById("start-btn").classList.remove("hidden");["focus-mode-btn","pause-btn"].forEach(id=>document.getElementById(id).classList.add("hidden"));document.getElementById("name-input").value="";showScreen("setup");renderSetup();}
+renderSetup();checkResume();
+</script>
+</body>
+</html>
